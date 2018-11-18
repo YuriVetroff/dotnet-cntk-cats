@@ -37,14 +37,13 @@ namespace CatsClassification
         public static void Train(DeviceDescriptor device, bool forceRetrain = true)
         {
             int numClasses = 3;
-            string animalsModelFile = Path.Combine(CurrentFolder, "AnimalsTransferLearning.model");
+            string modelFile = Path.Combine(CurrentFolder, "AnimalsTransferLearning.model");
 
             var trainFolder = Path.Combine(_baseDataFolder, _trainFolderPrefix);
             var dataset = _datasetCreator.GetDataset(trainFolder);
 
             // prepare the transfer model
             string predictionNodeName = "prediction";
-            Variable imageInput, labelInput;
             Function model = CntkHelper.GetModel(
                 Path.Combine(ExampleImageFolder, BaseResnetModelFile),
                 featureNodeName,
@@ -52,13 +51,8 @@ namespace CatsClassification
                 lastHiddenNodeName,
                 imageDims,
                 numClasses,
-                device,
-                out imageInput, out labelInput);
-
-            var input = Variable.InputVariable(imageDims, DataType.Float);
-            var labels = Variable.InputVariable(new int[] { numClasses }, DataType.Float);
-
-
+                device);
+            
             // prepare for training
             int maxMinibatches = 5;
             float learningRate = 0.2F;
@@ -73,8 +67,9 @@ namespace CatsClassification
                     new TrainingParameterScheduleDouble(momentum, 0),
                     true,
                     additionalLearningOptions)};
-            
 
+
+            var input = model.Arguments[0];
             var output = Variable.InputVariable(new int[] { numClasses }, DataType.Float);
             var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(model, output);
             var predictionError = CNTKLib.ClassificationError(model, output);
@@ -91,7 +86,7 @@ namespace CatsClassification
                     trainer.TrainMinibatch(
                         new Dictionary<Variable, Value>()
                         {
-                            { imageInput, imageBatch },
+                            { input, imageBatch },
                             { output, labelBatch }
                         },
                         device);
@@ -99,17 +94,10 @@ namespace CatsClassification
                     CntkHelper.PrintTrainingProgress(trainer, minibatchCount, 1);
                 }
             }
-
-            // save the trained model
-            model.Save(animalsModelFile);
-
-            // done with training, continue with validation
-            double error = Test(
-                animalsModelFile,
-                Path.Combine(_baseDataFolder, "Test"),
-                imageDims,
-                numClasses,
-                device);
+            
+            model.Save(modelFile);
+            
+            Test(modelFile, Path.Combine(_baseDataFolder, "Test"), imageDims, numClasses, device);
 
             Console.ReadLine();
         }
@@ -147,7 +135,7 @@ namespace CatsClassification
             return true;
         }
 
-        private static double Test(string modelFile, string testDataFolder,
+        private static void Test(string modelFile, string testDataFolder,
             int[] imageDims, int numClasses, DeviceDescriptor device)
         {
             var testFolder = Path.Combine(_baseDataFolder, _testFolderPrefix);
@@ -180,7 +168,7 @@ namespace CatsClassification
             }
 
             Console.WriteLine(miscountTotal);
-            return 1.0 * miscountTotal / dataset.Items.Count();
+            var error = 1.0 * miscountTotal / dataset.Items.Count();
         }
 
         private static Dictionary<string, int> LoadMapFile(string mapFile)

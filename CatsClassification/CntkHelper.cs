@@ -73,14 +73,12 @@ namespace CatsClassification
         }
 
         public static Function GetModel(string baseModelFile, string featureNodeName, string outputNodeName,
-            string hiddenNodeName, int[] imageDims, int numClasses, DeviceDescriptor device,
-            out Variable imageInput, out Variable labelInput)
+            string hiddenNodeName, int[] imageDims, int numClasses, DeviceDescriptor device)
         {
             Function baseModel = Function.Load(baseModelFile, device);
 
-            imageInput = Variable.InputVariable(imageDims, DataType.Float);
-            labelInput = Variable.InputVariable(new int[] { numClasses }, DataType.Float);
-            Function normalizedFeatureNode = CNTKLib.Minus(imageInput, Constant.Scalar(DataType.Float, 114.0F));
+            var input = Variable.InputVariable(imageDims, DataType.Float);
+            Function normalizedFeatureNode = CNTKLib.Minus(input, Constant.Scalar(DataType.Float, 114.0F));
 
             Variable oldFeatureNode = baseModel.Arguments.Single(a => a.Name == featureNodeName);
             Function lastNode = baseModel.FindByName(hiddenNodeName);
