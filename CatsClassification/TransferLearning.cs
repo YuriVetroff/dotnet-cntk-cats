@@ -9,6 +9,11 @@ namespace CatsClassification
 {
     public class TransferLearning
     {
+        protected const string FEATURE_STREAM_NAME = "features";
+        protected const string LABEL_STREAM_NAME = "labels";
+
+        protected const string DATA_FILE = "dataset.txt";
+
         public static string CurrentFolder = "D:/";
 
         public static string ExampleImageFolder
@@ -68,30 +73,30 @@ namespace CatsClassification
                     true,
                     additionalLearningOptions)};
 
-
             var input = model.Arguments[0];
             var output = Variable.InputVariable(new int[] { numClasses }, DataType.Float);
             var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(model, output);
             var predictionError = CNTKLib.ClassificationError(model, output);
             var trainer = Trainer.CreateTrainer(model, trainingLoss, predictionError, parameterLearners);
 
-            for (int minibatchCount = 0; minibatchCount < maxMinibatches; ++minibatchCount)
+            var dataSource = InitDataSource(dataset, DATA_FILE);
+
+            var currentMinibatch = 0;
+            uint minibatchSize = 15;
+            while (true)
             {
-                Value imageBatch, labelBatch;
-                int batchCount = 0, batchSize = 15;
-                while (GetMinibatch(dataset, batchSize, batchCount++,
-                    imageDims, numClasses, device, out imageBatch, out labelBatch))
+                var minibatchData = dataSource.MinibatchSource.GetNextMinibatch(minibatchSize, device);
+                var arguments = new Dictionary<Variable, MinibatchData>
+                    {
+                        { input, minibatchData[dataSource.FeatureStreamInfo] },
+                        { output, minibatchData[dataSource.LabelStreamInfo] }
+                    };
+                trainer.TrainMinibatch(arguments, device);
+                CntkHelper.PrintTrainingProgress(trainer, currentMinibatch, 1);
+                currentMinibatch++;
+                if (currentMinibatch >= maxMinibatches)
                 {
-#pragma warning disable 618
-                    trainer.TrainMinibatch(
-                        new Dictionary<Variable, Value>()
-                        {
-                            { input, imageBatch },
-                            { output, labelBatch }
-                        },
-                        device);
-#pragma warning restore 618
-                    CntkHelper.PrintTrainingProgress(trainer, minibatchCount, 1);
+                    break;
                 }
             }
             
@@ -102,39 +107,6 @@ namespace CatsClassification
             Console.ReadLine();
         }
 
-        private static bool GetMinibatch(Dataset dataset,
-            int batchSize, int batchCount, int[] imageDims, int numClasses, DeviceDescriptor device,
-            out Value imageBatch, out Value labelBatch)
-        {
-            int actualBatchSize = Math.Min(dataset.Items.Count() - batchSize * batchCount, batchSize);
-            if (actualBatchSize <= 0)
-            {
-                imageBatch = null;
-                labelBatch = null;
-                return false;
-            }
-
-            if (batchCount == 0)
-            {
-                var random = new Random(0);
-                dataset.Items = dataset.Items.OrderBy(x => random.Next()).ToList();
-            }
-
-            int imageSize = imageDims[0] * imageDims[1] * imageDims[2];
-            float[] batchImageBuf = new float[actualBatchSize * imageSize];
-            float[] batchLabelBuf = new float[actualBatchSize * numClasses];
-            for (int i = 0; i < actualBatchSize; i++)
-            {
-                int index = i + batchSize * batchCount;
-                dataset.Items[index].Input.CopyTo(batchImageBuf, i * imageSize);
-                dataset.Items[index].Output.CopyTo(batchLabelBuf, i * numClasses);
-            }
-
-            imageBatch = Value.CreateBatch(imageDims, batchImageBuf, device);
-            labelBatch = Value.CreateBatch(new int[] { numClasses }, batchLabelBuf, device);
-            return true;
-        }
-
         private static void Test(string modelFile, string testDataFolder,
             int[] imageDims, int numClasses, DeviceDescriptor device)
         {
@@ -142,33 +114,42 @@ namespace CatsClassification
             var dataset = _datasetCreator.GetDataset(testFolder);
 
             Function model = Function.Load(modelFile, device);
-            Value imageBatch, labelBatch;
-            int batchCount = 0, batchSize = 15;
-            int miscountTotal = 0, totalCount = 0;
-            while (GetMinibatch(dataset, batchSize, batchCount++,
-                TransferLearning.imageDims, numClasses, device, out imageBatch, out labelBatch))
-            {
-                var inputDataMap = new Dictionary<Variable, Value>() { { model.Arguments[0], imageBatch } };
+            var input = model.Arguments[0];
+            var output = model.Output;
 
-                Variable outputVar = model.Output;
-                var outputDataMap = new Dictionary<Variable, Value>() { { outputVar, null } };
+            int mistakes = 0, total = 0;
+
+            var dataSource = InitDataSource(dataset, DATA_FILE);
+            var currentMinibatch = 0;
+            uint minibatchSize = 1;
+            while (true)
+            {
+                var minibatchData = dataSource.MinibatchSource.GetNextMinibatch(minibatchSize, device);
+                var inputDataMap = new Dictionary<Variable, Value>() { { input, minibatchData[dataSource.FeatureStreamInfo].data } };
+                var outputDataMap = new Dictionary<Variable, Value>() { { output, null } };
+
                 model.Evaluate(inputDataMap, outputDataMap, device);
-                var outputVal = outputDataMap[outputVar];
-                var actual = outputVal.GetDenseData<float>(outputVar);
+                var outputVal = outputDataMap[output];
+                var actual = outputVal.GetDenseData<float>(output);
+                var labelBatch = minibatchData[dataSource.LabelStreamInfo].data;
                 var expected = labelBatch.GetDenseData<float>(model.Output);
 
                 var actualLabels = actual.Select((IList<float> l) => l.IndexOf(l.Max())).ToList();
                 var expectedLabels = expected.Select((IList<float> l) => l.IndexOf(l.Max())).ToList();
 
                 int misMatches = actualLabels.Zip(expectedLabels, (a, b) => a.Equals(b) ? 0 : 1).Sum();
-                miscountTotal += misMatches;
-                totalCount += actualLabels.Count();
+                mistakes += misMatches;
+                total += actualLabels.Count();
 
-                Console.WriteLine($"Validating Model: Total Samples = {totalCount}, Misclassify Count = {miscountTotal}");
+                currentMinibatch++;
+                if (minibatchData.Values.Any(x => x.sweepEnd))
+                {
+                    break;
+                }
             }
-
-            Console.WriteLine(miscountTotal);
-            var error = 1.0 * miscountTotal / dataset.Items.Count();
+            Console.WriteLine($"Validating Model: Total Samples = {total}, Misclassify Count = {mistakes}");
+            
+            var error = 1.0 * mistakes / dataset.Items.Count();
         }
 
         private static Dictionary<string, int> LoadMapFile(string mapFile)
@@ -197,6 +178,25 @@ namespace CatsClassification
                 }
             }
             return imageFileToLabel;
+        }
+
+        private static CntkDataSource InitDataSource(Dataset dataset, string filename)
+        {
+            var inputLength = dataset.Items.First().Input.Length;
+            var outputLength = dataset.Items.First().Output.Length;
+            var streamConfigs = new StreamConfiguration[]
+            {
+                new StreamConfiguration(FEATURE_STREAM_NAME, inputLength),
+                new StreamConfiguration(LABEL_STREAM_NAME, outputLength)
+            };
+
+            var creator = new DataFileCreator();
+            creator.CreateDataFile(dataset, filename);
+
+            return new CntkDataSource(MinibatchSource.TextFormatMinibatchSource(
+                filename,
+                streamConfigs,
+                MinibatchSource.InfinitelyRepeat), FEATURE_STREAM_NAME, LABEL_STREAM_NAME);
         }
     }
 }
