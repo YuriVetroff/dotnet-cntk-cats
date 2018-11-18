@@ -92,7 +92,6 @@
     <Compile Include="ImageHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CntkHelper.cs" />
-    <Compile Include="TransferLearning.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
