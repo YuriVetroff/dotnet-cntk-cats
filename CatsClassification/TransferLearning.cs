@@ -22,7 +22,6 @@ namespace CatsClassification
         private static string _lastHiddenNodeName = "z.x";
         private static string _predictionNodeName = "prediction";
         private static int[] _inputShape = new int[] { 224, 224, 3 };
-        private static int[] _outputShape = new int[] { _classCount };
 
         private static string _baseDataFolder = Path.Combine(_baseFolder, "Datasets/Animals-cats");
         private static string _trainFolderPrefix = "Train";
@@ -104,13 +103,12 @@ namespace CatsClassification
                 }
             }
                         
-            Test(model, Path.Combine(_baseDataFolder, "Test"), _inputShape, _classCount);
+            Test(model, Path.Combine(_baseDataFolder, "Test"), _classCount);
 
             Console.ReadLine();
         }
 
-        private static void Test(Function model, string testDataFolder,
-            int[] imageDims, int numClasses)
+        private static void Test(Function model, string testDataFolder, int numClasses)
         {
             var testFolder = Path.Combine(_baseDataFolder, _testFolderPrefix);
             var dataset = _datasetCreator.GetDataset(testFolder);
