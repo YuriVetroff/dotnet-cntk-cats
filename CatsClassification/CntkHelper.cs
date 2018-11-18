@@ -12,10 +12,7 @@ namespace CatsClassification
         Sigmoid,
         Tanh
     }
-    public static class TestCommon
-    {
-        public static string TestDataDirPrefix;
-    }
+
     public class CntkHelper
     {
         public static Function Dense(Variable input, int outputDim, DeviceDescriptor device,
@@ -72,25 +69,23 @@ namespace CatsClassification
             }
         }
 
-        public static Function GetModel(string baseModelFile, string featureNodeName, string outputNodeName,
+        public static Function BuildTransferLearningModel(Function baseModel, string featureNodeName, string outputNodeName,
             string hiddenNodeName, int[] imageDims, int numClasses, DeviceDescriptor device)
         {
-            Function baseModel = Function.Load(baseModelFile, device);
-
             var input = Variable.InputVariable(imageDims, DataType.Float);
-            Function normalizedFeatureNode = CNTKLib.Minus(input, Constant.Scalar(DataType.Float, 114.0F));
+            var normalizedFeatureNode = CNTKLib.Minus(input, Constant.Scalar(DataType.Float, 114.0F));
 
-            Variable oldFeatureNode = baseModel.Arguments.Single(a => a.Name == featureNodeName);
-            Function lastNode = baseModel.FindByName(hiddenNodeName);
-
-            // Clone the desired layers with fixed weights
-            Function clonedLayer = CNTKLib.AsComposite(lastNode).Clone(
+            var oldFeatureNode = baseModel.Arguments.Single(a => a.Name == featureNodeName);
+            var lastNode = baseModel.FindByName(hiddenNodeName);
+            
+            var clonedLayer = CNTKLib.AsComposite(lastNode).Clone(
                 ParameterCloningMethod.Freeze,
-                new Dictionary<Variable, Variable>() { { oldFeatureNode, normalizedFeatureNode } });
-
-            // Add new dense layer for class prediction
-            Function clonedModel = CntkHelper.Dense(clonedLayer, numClasses, device, Activation.None, outputNodeName);
-
+                new Dictionary<Variable, Variable>()
+                {
+                    { oldFeatureNode, normalizedFeatureNode }
+                });
+            
+            var clonedModel = Dense(clonedLayer, numClasses, device, Activation.None, outputNodeName);
             return clonedModel;
         }
     }

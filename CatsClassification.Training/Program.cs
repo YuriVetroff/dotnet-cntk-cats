@@ -1,17 +1,17 @@
-﻿using CNTK;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CatsClassification.Training
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
-        {
-            TestCommon.TestDataDirPrefix = "D:/";
-            var device = DeviceDescriptor.CPUDevice;
+        private const string TRAIN_DATASET_FILE = "D:/train-dataset.txt";
+        private const string TEST_DATASET_FILE = "D:/test-dataset.txt";
 
-            Console.WriteLine("======== running TransferLearning.TrainAndEvaluateWithAnimalData using CPU ========");
-            TransferLearning.Train(device);
+        private static void Main(string[] args)
+        {
+            Console.WriteLine("Cats classification");
+            TransferLearning.Train();
         }
     }
 }
