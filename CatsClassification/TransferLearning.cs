@@ -102,22 +102,21 @@ namespace CatsClassification
             
             model.Save(modelFile);
             
-            Test(modelFile, Path.Combine(_baseDataFolder, "Test"), imageDims, numClasses, device);
+            Test(model, Path.Combine(_baseDataFolder, "Test"), imageDims, numClasses, device);
 
             Console.ReadLine();
         }
 
-        private static void Test(string modelFile, string testDataFolder,
+        private static void Test(Function model, string testDataFolder,
             int[] imageDims, int numClasses, DeviceDescriptor device)
         {
             var testFolder = Path.Combine(_baseDataFolder, _testFolderPrefix);
             var dataset = _datasetCreator.GetDataset(testFolder);
-
-            Function model = Function.Load(modelFile, device);
+            
             var input = model.Arguments[0];
             var output = model.Output;
 
-            int mistakes = 0, total = 0;
+            int correct = 0, total = 0;
 
             var dataSource = InitDataSource(dataset, DATA_FILE);
             var currentMinibatch = 0;
@@ -134,11 +133,13 @@ namespace CatsClassification
                 var labelBatch = minibatchData[dataSource.LabelStreamInfo].data;
                 var expected = labelBatch.GetDenseData<float>(model.Output);
 
-                var actualLabels = actual.Select((IList<float> l) => l.IndexOf(l.Max())).ToList();
-                var expectedLabels = expected.Select((IList<float> l) => l.IndexOf(l.Max())).ToList();
+                Func<IEnumerable<IList<float>>, IEnumerable<int>> maxSelector =
+                    (collection) => collection.Select(x => x.IndexOf(x.Max()));
 
-                int misMatches = actualLabels.Zip(expectedLabels, (a, b) => a.Equals(b) ? 0 : 1).Sum();
-                mistakes += misMatches;
+                var actualLabels = maxSelector(actual);
+                var expectedLabels = maxSelector(expected);
+                
+                correct += actualLabels.Zip(expectedLabels, (a, b) => a.Equals(b) ? 1 : 0).Sum();
                 total += actualLabels.Count();
 
                 currentMinibatch++;
@@ -147,9 +148,9 @@ namespace CatsClassification
                     break;
                 }
             }
-            Console.WriteLine($"Validating Model: Total Samples = {total}, Misclassify Count = {mistakes}");
+            var error = 1.0 * correct / dataset.Items.Count();
+            Console.WriteLine($"Testing result: correctly answered {correct} of {total}, accuracy = {error * 100}%");
             
-            var error = 1.0 * mistakes / dataset.Items.Count();
         }
 
         private static Dictionary<string, int> LoadMapFile(string mapFile)
