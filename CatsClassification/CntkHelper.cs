@@ -1,5 +1,4 @@
 ﻿using CNTK;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -57,16 +56,6 @@ namespace CatsClassification
             int[] s2 = { outputDim };
             var plusParam = new Parameter(s2, 0.0f, device, "plusParam");
             return CNTKLib.Plus(plusParam, timesFunction, outputName);
-        }
-
-        public static void PrintTrainingProgress(Trainer trainer, int minibatchIdx, int outputFrequencyInMinibatches)
-        {
-            if ((minibatchIdx % outputFrequencyInMinibatches) == 0 && trainer.PreviousMinibatchSampleCount() != 0)
-            {
-                var trainLossValue = trainer.PreviousMinibatchLossAverage();
-                var evaluationValue = trainer.PreviousMinibatchEvaluationAverage();
-                Console.WriteLine($"Minibatch: {minibatchIdx} CrossEntropyLoss = {trainLossValue}, EvaluationCriterion = {evaluationValue}");
-            }
         }
 
         public static Function BuildTransferLearningModel(Function baseModel, string featureNodeName, string outputNodeName,
