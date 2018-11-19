@@ -85,6 +85,7 @@
   <ItemGroup>
     <Compile Include="CatsClassificationRunner.cs" />
     <Compile Include="CntkDataSource.cs" />
+    <Compile Include="CntkModelWrapper.cs" />
     <Compile Include="DataFileCreator.cs" />
     <Compile Include="DataItem.cs" />
     <Compile Include="Dataset.cs" />

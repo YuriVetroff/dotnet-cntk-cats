@@ -10,31 +10,19 @@ namespace CatsClassification
         private const string FEATURE_STREAM_NAME = "features";
         private const string LABEL_STREAM_NAME = "labels";
 
-        private const int IMAGE_WIDTH = 224;
-        private const int IMAGE_HEIGHT = 224;
-        private const int IMAGE_DEPTH = 3;
-        private const int IMAGE_TOTAL_LENGTH = IMAGE_WIDTH * IMAGE_HEIGHT * IMAGE_DEPTH;
-
-        private const int CLASS_COUNT = 3;
-
         private readonly DeviceDescriptor _device;
-
-        private readonly Function _model;
-        private readonly Variable _input;
+        private readonly CntkModelWrapper _modelWrapper;
 
         public CatsClassificationRunner(string modelFile, DeviceDescriptor device)
         {
             _device = device;
-            _model = Function.Load(modelFile, device);
-            _input = _model.Arguments[0];
+            _modelWrapper = new CntkModelWrapper(modelFile, device);
         }
 
         public void Train(string datasetFile)
         {
             var dataSource = CreateDataSource(datasetFile);
-            var trainingOutput =
-                Variable.InputVariable(new int[] { CLASS_COUNT }, DataType.Float);
-            var trainer = CreateTrainer(trainingOutput);
+            var trainer = CreateTrainer();
 
             const int minibatchSize = 15;
             const int maxMinibatches = 5;
@@ -44,8 +32,8 @@ namespace CatsClassification
                 var minibatchData = dataSource.MinibatchSource.GetNextMinibatch(minibatchSize, _device);
                 var arguments = new Dictionary<Variable, MinibatchData>
                     {
-                        { _input, minibatchData[dataSource.FeatureStreamInfo] },
-                        { trainingOutput, minibatchData[dataSource.LabelStreamInfo] }
+                        { _modelWrapper.Input, minibatchData[dataSource.FeatureStreamInfo] },
+                        { _modelWrapper.TrainingOutput, minibatchData[dataSource.LabelStreamInfo] }
                     };
                 trainer.TrainMinibatch(arguments, _device);
 
@@ -56,21 +44,21 @@ namespace CatsClassification
                 }
             }
         }
-        private Trainer CreateTrainer(Variable trainingOutput)
+        private Trainer CreateTrainer()
         {
             const float learningRate = 0.2F;
             const float momentum = 0.9F;
             const float l2regularization = 0.1F;
             
-            var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(_model, trainingOutput);
-            var predictionError = CNTKLib.ClassificationError(_model, trainingOutput);
+            var trainingLoss = CNTKLib.CrossEntropyWithSoftmax(_modelWrapper.Model, _modelWrapper.TrainingOutput);
+            var predictionError = CNTKLib.ClassificationError(_modelWrapper.Model, _modelWrapper.TrainingOutput);
 
             Func<float, TrainingParameterScheduleDouble> createTrainingParam =
                 (value) => new TrainingParameterScheduleDouble(value, 0);
             var learners = new List<Learner>()
             {
                 Learner.MomentumSGDLearner(
-                    _model.Parameters(),
+                    _modelWrapper.Model.Parameters(),
                     createTrainingParam(learningRate),
                     createTrainingParam(momentum),
                     true,
@@ -81,7 +69,7 @@ namespace CatsClassification
             };
 
             return Trainer.CreateTrainer(
-                _model,
+                _modelWrapper.Model,
                 trainingLoss,
                 predictionError,
                 learners);
@@ -90,7 +78,6 @@ namespace CatsClassification
         public void Test(string datasetFile)
         {
             var dataSource = CreateDataSource(datasetFile);
-            var testingOutput = _model.Output;
 
             var correct = 0;
             var total = 0;
@@ -100,14 +87,14 @@ namespace CatsClassification
             while (true)
             {
                 var minibatchData = dataSource.MinibatchSource.GetNextMinibatch(minibatchSize, _device);
-                var inputDataMap = new Dictionary<Variable, Value>() { { _input, minibatchData[dataSource.FeatureStreamInfo].data } };
-                var outputDataMap = new Dictionary<Variable, Value>() { { testingOutput, null } };
+                var inputDataMap = new Dictionary<Variable, Value>() { { _modelWrapper.Input, minibatchData[dataSource.FeatureStreamInfo].data } };
+                var outputDataMap = new Dictionary<Variable, Value>() { { _modelWrapper.EvaluationOutput, null } };
 
-                _model.Evaluate(inputDataMap, outputDataMap, _device);
-                var outputVal = outputDataMap[testingOutput];
-                var actual = outputVal.GetDenseData<float>(testingOutput);
+                _modelWrapper.Model.Evaluate(inputDataMap, outputDataMap, _device);
+                var outputVal = outputDataMap[_modelWrapper.EvaluationOutput];
+                var actual = outputVal.GetDenseData<float>(_modelWrapper.EvaluationOutput);
                 var labelBatch = minibatchData[dataSource.LabelStreamInfo].data;
-                var expected = labelBatch.GetDenseData<float>(_model.Output);
+                var expected = labelBatch.GetDenseData<float>(_modelWrapper.Model.Output);
 
                 Func<IEnumerable<IList<float>>, IEnumerable<int>> maxSelector =
                     (collection) => collection.Select(x => x.IndexOf(x.Max()));
@@ -132,8 +119,8 @@ namespace CatsClassification
         {
             var streamConfigs = new StreamConfiguration[]
             {
-                new StreamConfiguration(FEATURE_STREAM_NAME, IMAGE_TOTAL_LENGTH),
-                new StreamConfiguration(LABEL_STREAM_NAME, CLASS_COUNT)
+                new StreamConfiguration(FEATURE_STREAM_NAME, _modelWrapper.InputLength),
+                new StreamConfiguration(LABEL_STREAM_NAME, _modelWrapper.OutputLength)
             };
 
             return new CntkDataSource(MinibatchSource.TextFormatMinibatchSource(
