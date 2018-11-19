@@ -1,5 +1,6 @@
 ﻿using CNTK;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using static System.Console;
@@ -8,6 +9,12 @@ namespace CatsClassification.Training
 {
     internal class Program
     {
+        private static int IMAGE_WIDTH = 224;
+        private static int IMAGE_HEIGHT = 224;
+        private static int IMAGE_DEPTH = 3;
+
+        private static int CLASS_COUNT = 3;
+
         private static string TRAIN_DATASET_FILE = "train-dataset.txt";
         private static string TEST_DATASET_FILE = "test-dataset.txt";
         private static string NEW_MODEL_FILE = "cats-classificator.model";
@@ -73,8 +80,7 @@ namespace CatsClassification.Training
             const string featureNodeName = "features";
             const string lastHiddenNodeName = "z.x";
             const string predictionNodeName = "prediction";
-            const int classCount = 3;
-            int[] inputShape = new int[] { 224, 224, 3 };
+            int[] inputShape = new int[] { IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_DEPTH };
 
             var device = DeviceDescriptor.CPUDevice;
             var model = CntkHelper.BuildTransferLearningModel(
@@ -83,10 +89,28 @@ namespace CatsClassification.Training
                     predictionNodeName,
                     lastHiddenNodeName,
                     inputShape,
-                    classCount,
+                    CLASS_COUNT,
                     device);
 
             model.Save(FinalizePath(NEW_MODEL_FILE));
+        }
+        private static void CreateAndSaveDataset()
+        {
+            var datasetCreator = new ImageFolderDatasetCreator(
+                new Dictionary<string, int>
+                {
+                    {  "Tiger", 0 },
+                    {  "Leopard", 1 },
+                    {  "Puma", 2 }
+                }, CLASS_COUNT, IMAGE_WIDTH, IMAGE_HEIGHT);
+
+            var dataFileCreator = new DataFileCreator();
+
+            var trainDataset = datasetCreator.GetDataset("D:/Datasets/Animals-cats/Train");
+            dataFileCreator.CreateDataFile(trainDataset, FinalizePath(TRAIN_DATASET_FILE));
+
+            var testDataset = datasetCreator.GetDataset("D:/Datasets/Animals-cats/Test");
+            dataFileCreator.CreateDataFile(testDataset, FinalizePath(TEST_DATASET_FILE));
         }
     }
 }
