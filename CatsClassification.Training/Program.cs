@@ -8,33 +8,37 @@ namespace CatsClassification.Training
 {
     internal class Program
     {
-        private static string TRAIN_DATASET_FILE = "D:/train-dataset.txt";
-        private static string TEST_DATASET_FILE = "D:/test-dataset.txt";
+        private static string TRAIN_DATASET_FILE = "train-dataset.txt";
+        private static string TEST_DATASET_FILE = "test-dataset.txt";
         private static string NEW_MODEL_FILE = "cats-classificator.model";
         private static string TRAINED_MODEL_FILE = "cats-classificator-trained.model";
 
-        private static string _workingDirectory = "D:/cats-classification";
-        private static Func<string, string> _finalizePath =
-            (path) => Path.Combine(_workingDirectory, path);
+        private static string WORKING_DIRECTORY = "D:/cats-classification";
+
+        private static string FinalizePath(string path) =>
+            Path.Combine(WORKING_DIRECTORY, path);
 
         private static void Main(string[] args)
         {
             WriteLine("CATS CLASSIFICATION");
             WriteLine();
 
-            var runner = new CatsClassificationRunner(_finalizePath(NEW_MODEL_FILE));
+            var runner = new CatsClassificationRunner(FinalizePath(NEW_MODEL_FILE));
 
             runner.TrainingIterationPerformed += TrainingIterationPerformed;
             runner.TrainingFinished += TrainingFinished;
             runner.TestingFinished += TestingFinished;
 
-            WriteLine("Training started...");
-            runner.Train(_finalizePath(TRAIN_DATASET_FILE));
-            WriteLine();
+            Action<string, Action> runProcessAndWriteInConsole =
+                (processName, action) =>
+                {
+                    WriteLine($"{processName} started...");
+                    action();
+                    WriteLine();
+                };
 
-            WriteLine("Testing started...");
-            runner.Test(_finalizePath(TEST_DATASET_FILE));
-            WriteLine();
+            runProcessAndWriteInConsole("Training", () => runner.Train(FinalizePath(TRAIN_DATASET_FILE)));
+            runProcessAndWriteInConsole("Testing", () => runner.Test(FinalizePath(TEST_DATASET_FILE)));
 
             WriteLine("Press any key to exit...");
             ReadLine();
@@ -44,15 +48,16 @@ namespace CatsClassification.Training
             object sender, TestingResult testingResult) =>
             WriteLine(
                 $"Testing finished. " +
-                $"Correctly answered {testingResult.Correct} of {testingResult.Total}," +
+                $"Correctly answered {testingResult.Correct} of {testingResult.Total}, " +
                 $"accuracy = {testingResult.Accuracy * 100}%");
 
         private static void TrainingFinished(
             object sender, TrainingResult trainingResult)
         {
-            var finalPath = _finalizePath(TRAINED_MODEL_FILE);
+            var finalPath = FinalizePath(TRAINED_MODEL_FILE);
             File.WriteAllBytes(finalPath, trainingResult.NewModelData);
-            WriteLine($"Training finished. The model is saved at {finalPath}.");
+            WriteLine(
+                $"Training finished. The model is saved at {finalPath}.");
         }
 
         private static void TrainingIterationPerformed(
@@ -73,7 +78,7 @@ namespace CatsClassification.Training
 
             var device = DeviceDescriptor.CPUDevice;
             var model = CntkHelper.BuildTransferLearningModel(
-                    Function.Load(_finalizePath(baseModelFile), device),
+                    Function.Load(FinalizePath(baseModelFile), device),
                     featureNodeName,
                     predictionNodeName,
                     lastHiddenNodeName,
@@ -81,7 +86,7 @@ namespace CatsClassification.Training
                     classCount,
                     device);
 
-            model.Save(_finalizePath(NEW_MODEL_FILE));
+            model.Save(FinalizePath(NEW_MODEL_FILE));
         }
     }
 }
