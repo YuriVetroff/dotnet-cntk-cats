@@ -13,7 +13,7 @@ namespace CatsClassification.Training
         private static string NEW_MODEL_FILE = "cats-classificator.model";
         private static string TRAINED_MODEL_FILE = "cats-classificator-trained.model";
 
-        private static string WORKING_DIRECTORY = "D:/cats-classification";
+        private static string WORKING_DIRECTORY = "cats-classification";
 
         private static string FinalizePath(string path) =>
             Path.Combine(WORKING_DIRECTORY, path);
