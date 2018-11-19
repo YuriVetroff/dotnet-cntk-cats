@@ -115,18 +115,17 @@ namespace CatsClassification
             Console.WriteLine($"Testing result: correctly answered {correct} of {total}, accuracy = {error * 100}%");
         }
 
-        private CntkDataSource CreateDataSource(string datasetFile)
-        {
-            var streamConfigs = new StreamConfiguration[]
-            {
-                new StreamConfiguration(FEATURE_STREAM_NAME, _modelWrapper.InputLength),
-                new StreamConfiguration(LABEL_STREAM_NAME, _modelWrapper.OutputLength)
-            };
-
-            return new CntkDataSource(MinibatchSource.TextFormatMinibatchSource(
-                datasetFile,
-                streamConfigs,
-                MinibatchSource.InfinitelyRepeat), FEATURE_STREAM_NAME, LABEL_STREAM_NAME);
-        }
+        private CntkDataSource CreateDataSource(string datasetFile) =>
+            new CntkDataSource(
+                MinibatchSource.TextFormatMinibatchSource(
+                    datasetFile,
+                    new StreamConfiguration[]
+                    {
+                        new StreamConfiguration(FEATURE_STREAM_NAME, _modelWrapper.InputLength),
+                        new StreamConfiguration(LABEL_STREAM_NAME, _modelWrapper.OutputLength)
+                    },
+                    MinibatchSource.InfinitelyRepeat),
+                FEATURE_STREAM_NAME,
+                LABEL_STREAM_NAME);
     }
 }
