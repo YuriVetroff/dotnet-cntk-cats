@@ -93,7 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="cats-classification\cats-classificator.model">
+    <None Include="cats-classification\cats-classifier.model">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="cats-classification\ResNet18_ImageNet_CNTK.model">

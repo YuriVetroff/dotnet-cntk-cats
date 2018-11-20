@@ -71,8 +71,8 @@ namespace CatsClassification.Training
         private const string TEST_DATASET_FILE = "test-dataset.txt";
 
         private const string BASE_MODEL_FILE = "ResNet18_ImageNet_CNTK.model";
-        private const string NEW_MODEL_FILE = "cats-classificator.model";
-        private const string TRAINED_MODEL_FILE = "cats-classificator-trained.model";
+        private const string NEW_MODEL_FILE = "cats-classifier.model";
+        private const string TRAINED_MODEL_FILE = "cats-classifier-trained.model";
 
         private const bool REQUIRE_INIT = false;
 
