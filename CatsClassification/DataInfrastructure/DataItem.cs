@@ -1,4 +1,4 @@
-﻿namespace CatsClassification
+﻿namespace CatsClassification.DataInfrastructure
 {
     public class DataItem
     {

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace CatsClassification
+namespace CatsClassification.DataInfrastructure
 {
     public class DataFileCreator
     {

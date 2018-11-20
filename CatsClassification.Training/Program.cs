@@ -1,4 +1,5 @@
-﻿using CNTK;
+﻿using CatsClassification.DataInfrastructure;
+using CNTK;
 using System;
 using System.Collections.Generic;
 using System.IO;

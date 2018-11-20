@@ -4,7 +4,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CatsClassification
+namespace CatsClassification.Common
 {
     public static class ImageHelper
     {

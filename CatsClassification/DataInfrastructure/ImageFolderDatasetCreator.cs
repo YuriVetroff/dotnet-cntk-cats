@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using CatsClassification.Common;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace CatsClassification
+namespace CatsClassification.DataInfrastructure
 {
     public class ImageFolderDatasetCreator
     {

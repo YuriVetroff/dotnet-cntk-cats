@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace CatsClassification
+namespace CatsClassification.DataInfrastructure
 {
     public class Dataset
     {
