@@ -14,16 +14,7 @@ namespace CatsClassification.Training
         private const int IMAGE_DEPTH = 3;
         private const int CLASS_COUNT = 3;
 
-        public static void Init(
-            string baseModelFile, string newModelFile,
-            string trainImageFolder, string trainDatasetFile,
-            string testImageFolder, string testDatasetFile)
-        {
-            CreateAndSaveModel(baseModelFile, newModelFile);
-            CreateAndSaveDatasets(trainImageFolder, trainDatasetFile, testImageFolder, testDatasetFile);
-        }
-
-        private static void CreateAndSaveModel(string baseModelFile, string newModelFile)
+        public static void CreateAndSaveModel(string baseModelFile, string newModelFile)
         {
             const string featureNodeName = "features";
             const string lastHiddenNodeName = "z.x";
@@ -42,16 +33,16 @@ namespace CatsClassification.Training
 
             model.Save(newModelFile);
         }
-        private static void CreateAndSaveDatasets(
+        public static void CreateAndSaveDatasets(
             string trainImageFolder, string trainDatasetFile,
             string testImageFolder, string testDatasetFile)
         {
             var datasetCreator = new ImageFolderDatasetCreator(
                 new Dictionary<string, int>
                 {
-                    {  "Tiger", 0 },
-                    {  "Leopard", 1 },
-                    {  "Puma", 2 }
+                    {  "tiger", 0 },
+                    {  "leopard", 1 },
+                    {  "puma", 2 }
                 }, CLASS_COUNT, IMAGE_WIDTH, IMAGE_HEIGHT);
 
             var dataFileCreator = new DataFileCreator();
@@ -66,25 +57,32 @@ namespace CatsClassification.Training
 
     internal class Program
     {
-        private static string WORKING_DIRECTORY = "cats-classification";
+        #region Constants
 
-        private static string TRAIN_DATASET_FILE = "train-dataset.txt";
-        private static string TEST_DATASET_FILE = "test-dataset.txt";
+        private const string WORKING_DIRECTORY = "cats-classification";
 
-        private static string BASE_MODEL_FILE = "ResNet18_ImageNet_CNTK.model";
-        private static string NEW_MODEL_FILE = "cats-classificator.model";
-        private static string TRAINED_MODEL_FILE = "cats-classificator-trained.model";
+        private const string TRAIN_IMAGE_FOLDER = "images/train";
+        private const string TEST_IMAGE_FOLDER = "images/test";
 
-        private static string FinalizePath(string path) =>
-            Path.Combine(WORKING_DIRECTORY, path);
+        private const string TRAIN_DATASET_FILE = "train-dataset.txt";
+        private const string TEST_DATASET_FILE = "test-dataset.txt";
+
+        private const string BASE_MODEL_FILE = "ResNet18_ImageNet_CNTK.model";
+        private const string NEW_MODEL_FILE = "cats-classificator.model";
+        private const string TRAINED_MODEL_FILE = "cats-classificator-trained.model";
+
+        private const bool REQUIRE_INIT = true;
+
+        #endregion
+
+        #region Primary methods
 
         private static void Main(string[] args)
         {
-            const bool requireInit = false;
-            RunTraining(requireInit);
+            RunTraining(REQUIRE_INIT);
         }
 
-        private static void RunTraining(bool requireInit = false)
+        private static void RunTraining(bool requireInit)
         {
             WriteLine("CATS CLASSIFICATION");
             WriteLine();
@@ -100,13 +98,7 @@ namespace CatsClassification.Training
             if (requireInit)
             {
                 runProcessAndWriteInConsole("Initialization",
-                    () => CatsClassificationInitializer.Init(
-                        FinalizePath(BASE_MODEL_FILE),
-                        FinalizePath(NEW_MODEL_FILE),
-                        FinalizePath("D:/Datasets/Animals-cats/Train"),
-                        FinalizePath(TRAIN_DATASET_FILE),
-                        FinalizePath("D:/Datasets/Animals-cats/Test"),
-                        FinalizePath(TEST_DATASET_FILE)));
+                    () => Init());
             }
 
             var runner = new CatsClassificationRunner(FinalizePath(NEW_MODEL_FILE));
@@ -121,6 +113,22 @@ namespace CatsClassification.Training
             WriteLine("Press any key to exit...");
             ReadLine();
         }
+        private static void Init()
+        {
+            CatsClassificationInitializer.CreateAndSaveModel(
+                FinalizePath(BASE_MODEL_FILE),
+                FinalizePath(NEW_MODEL_FILE));
+
+            CatsClassificationInitializer.CreateAndSaveDatasets(
+                FinalizePath(TRAIN_IMAGE_FOLDER),
+                FinalizePath(TRAIN_DATASET_FILE),
+                FinalizePath(TEST_IMAGE_FOLDER),
+                FinalizePath(TEST_DATASET_FILE));
+        }
+
+        #endregion
+
+        #region Training event handlers
 
         private static void TestingFinished(
             object sender, TestingResult testingResult) =>
@@ -144,5 +152,14 @@ namespace CatsClassification.Training
                 $"Minibatch: {trainingProgress.MinibatchesSeen} " +
                 $"CrossEntropyLoss = {trainingProgress.Loss} " +
                 $"EvaluationCriterion = {trainingProgress.EvaluationCriterion}");
+
+        #endregion
+
+        #region Service methods
+
+        private static string FinalizePath(string path) =>
+            Path.Combine(WORKING_DIRECTORY, path);
+
+        #endregion
     }
 }

@@ -108,6 +108,60 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="cats-classification\images\test\leopard\A-leopard-in-Yala-Park-Sri-Lanka.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\test\leopard\Leopard-Man-Eater_d_d.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\test\puma\1407778806000-mountainlion.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\test\puma\Cougar_Banner_2_1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\test\tiger\tiger_amur_snow.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\test\tiger\White-tiger-2407799_1280.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\leopard\dt.common.streams.StreamServer.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\leopard\leopard.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\leopard\lpd.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\leopard\©Benjamin_Ackerman_scotia_female_exeter.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\puma\5196e02202be5.image.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\puma\635760982831282102-MountainLion-Cover-CourtesyUSFS-688x344.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\puma\mountain-lion-running-snow.ngsversion.1466005013837.adapt.1900.1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\puma\my-first-mountain-lion.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\tiger\animal-hero-tiger_0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\tiger\Bengal-Tiger-Portrait.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\tiger\csm_Amurtigerin_Bella_mit_zwei_Jungtieren_029cb0c996.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="cats-classification\images\train\tiger\DSC_5346-Bearbeitet-Bearbeitet.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="cats-classification\test-dataset.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
