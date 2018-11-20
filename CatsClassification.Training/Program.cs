@@ -71,7 +71,7 @@ namespace CatsClassification.Training
         private const string NEW_MODEL_FILE = "cats-classificator.model";
         private const string TRAINED_MODEL_FILE = "cats-classificator-trained.model";
 
-        private const bool REQUIRE_INIT = true;
+        private const bool REQUIRE_INIT = false;
 
         #endregion
 
