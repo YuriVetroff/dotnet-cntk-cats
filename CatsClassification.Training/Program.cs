@@ -1,4 +1,6 @@
 ﻿using CatsClassification.DataInfrastructure;
+using CatsClassification.Running;
+using CatsClassification.Running.Responses;
 using CNTK;
 using System;
 using System.Collections.Generic;
@@ -102,7 +104,7 @@ namespace CatsClassification.Training
                     () => Init());
             }
 
-            var runner = new CatsClassificationRunner();
+            var runner = RunnerFactory.GetRunnerForCats();
             runner.Mount(FinalizePath(NEW_MODEL_FILE));
 
             runner.TrainingIterationPerformed += TrainingIterationPerformed;

@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CatsClassification.Running.Responses;
+using System;
 
-namespace CatsClassification
+namespace CatsClassification.Running
 {
-    public abstract class AbstractRunner : IRunner
+    internal abstract class AbstractRunner : IRunner
     {
         public abstract void Mount(string modelFile);
         public abstract void Train(string datasetFile);

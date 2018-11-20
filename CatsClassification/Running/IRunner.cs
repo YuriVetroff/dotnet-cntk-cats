@@ -1,6 +1,7 @@
-﻿using System;
+﻿using CatsClassification.Running.Responses;
+using System;
 
-namespace CatsClassification
+namespace CatsClassification.Running
 {
     public interface IRunner
     {

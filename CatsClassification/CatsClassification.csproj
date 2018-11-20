@@ -84,7 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Running\AbstractRunner.cs" />
-    <Compile Include="Running\CatsClassificationRunner.cs" />
+    <Compile Include="Running\Domain\CatsClassificationRunner.cs" />
     <Compile Include="CntkDataSource.cs" />
     <Compile Include="CntkModelWrapper.cs" />
     <Compile Include="DataInfrastructure\DataFileCreator.cs" />
@@ -99,6 +99,7 @@
     <Compile Include="Running\Responces\TestingResultResponse.cs" />
     <Compile Include="Running\Responces\TrainingProgressResponse.cs" />
     <Compile Include="Running\Responces\TrainingResultResponse.cs" />
+    <Compile Include="Running\RunnerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

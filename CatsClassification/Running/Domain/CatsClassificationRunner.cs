@@ -1,11 +1,12 @@
-﻿using CNTK;
+﻿using CatsClassification.Running.Responses;
+using CNTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CatsClassification
+namespace CatsClassification.Running.Domain
 {
-    public class CatsClassificationRunner : AbstractRunner
+    internal class CatsClassificationRunner : AbstractRunner
     {
         private const string FEATURE_STREAM_NAME = "features";
         private const string LABEL_STREAM_NAME = "labels";

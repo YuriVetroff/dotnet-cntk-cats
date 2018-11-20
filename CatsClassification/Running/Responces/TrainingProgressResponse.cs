@@ -1,4 +1,4 @@
-﻿namespace CatsClassification
+﻿namespace CatsClassification.Running.Responses
 {
     public class TrainingProgressResponse : IRunnerResponse
     {
