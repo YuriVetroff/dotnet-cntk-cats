@@ -11,13 +11,12 @@ namespace CatsClassification
         private const string LABEL_STREAM_NAME = "labels";
 
         private readonly DeviceDescriptor _device = DeviceDescriptor.CPUDevice;
-        private readonly CntkModelWrapper _modelWrapper;
+        private CntkModelWrapper _modelWrapper;
 
-        public CatsClassificationRunner(string modelFile)
+        public override void Mount(string modelFile)
         {
             _modelWrapper = new CntkModelWrapper(modelFile, _device);
         }
-
         public override void Train(string datasetFile)
         {
             var dataSource = CreateDataSource(datasetFile);

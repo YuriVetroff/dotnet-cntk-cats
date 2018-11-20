@@ -102,7 +102,8 @@ namespace CatsClassification.Training
                     () => Init());
             }
 
-            var runner = new CatsClassificationRunner(FinalizePath(NEW_MODEL_FILE));
+            var runner = new CatsClassificationRunner();
+            runner.Mount(FinalizePath(NEW_MODEL_FILE));
 
             runner.TrainingIterationPerformed += TrainingIterationPerformed;
             runner.TrainingFinished += TrainingFinished;

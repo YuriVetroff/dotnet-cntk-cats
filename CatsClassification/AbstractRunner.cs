@@ -4,6 +4,7 @@ namespace CatsClassification
 {
     public abstract class AbstractRunner : IRunner
     {
+        public abstract void Mount(string modelFile);
         public abstract void Train(string datasetFile);
         public abstract void Test(string datasetFile);
 
