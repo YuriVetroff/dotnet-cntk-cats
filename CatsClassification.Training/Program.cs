@@ -133,27 +133,27 @@ namespace CatsClassification.Training
         #region Training event handlers
 
         private static void TestingFinished(
-            object sender, TestingResult testingResult) =>
+            object sender, TestingResultResponse testingResultResponse) =>
             WriteLine(
                 $"Testing finished. " +
-                $"Correctly answered {testingResult.Correct} of {testingResult.Total}, " +
-                $"accuracy = {testingResult.Accuracy * 100}%");
+                $"Correctly answered {testingResultResponse.Correct} of {testingResultResponse.Total}, " +
+                $"accuracy = {testingResultResponse.Accuracy * 100}%");
 
         private static void TrainingFinished(
-            object sender, TrainingResult trainingResult)
+            object sender, TrainingResultResponse trainingResultResponse)
         {
             var finalPath = FinalizePath(TRAINED_MODEL_FILE);
-            File.WriteAllBytes(finalPath, trainingResult.NewModelData);
+            File.WriteAllBytes(finalPath, trainingResultResponse.NewModelData);
             WriteLine(
                 $"Training finished. The model is saved at {finalPath}.");
         }
 
         private static void TrainingIterationPerformed(
-            object sender, TrainingProgress trainingProgress) =>
+            object sender, TrainingProgressResponse trainingProgressResponse) =>
             WriteLine(
-                $"Minibatch: {trainingProgress.MinibatchesSeen} " +
-                $"CrossEntropyLoss = {trainingProgress.Loss} " +
-                $"EvaluationCriterion = {trainingProgress.EvaluationCriterion}");
+                $"Minibatch: {trainingProgressResponse.MinibatchesSeen} " +
+                $"CrossEntropyLoss = {trainingProgressResponse.Loss} " +
+                $"EvaluationCriterion = {trainingProgressResponse.EvaluationCriterion}");
 
         #endregion
 

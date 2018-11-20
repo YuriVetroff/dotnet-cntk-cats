@@ -1,6 +1,6 @@
 ﻿namespace CatsClassification
 {
-    public class TestingResult : IRunnerResponse
+    public class TestingResultResponse : IRunnerResponse
     {
         public int Correct { get; set; }
         public int Total { get; set; }

@@ -35,21 +35,21 @@ namespace CatsClassification
                 };
                 trainer.TrainMinibatch(arguments, _device);
 
-                var trainingProgress = new TrainingProgress
+                var trainingProgressResponse = new TrainingProgressResponse
                 {
                     MinibatchesSeen = minibatchesSeen,
                     Loss = trainer.PreviousMinibatchLossAverage(),
                     EvaluationCriterion = trainer.PreviousMinibatchEvaluationAverage()
                 };
-                OnTrainingIterationPerformed(trainingProgress);
+                OnTrainingIterationPerformed(trainingProgressResponse);
                 minibatchesSeen++;
 
                 if (minibatchesSeen >= maxMinibatches)
                 {
-                    OnTrainingFinished(new TrainingResult
+                    OnTrainingFinished(new TrainingResultResponse
                     {
                         NewModelData = _modelWrapper.Model.Save(),
-                        Progress = trainingProgress
+                        Progress = trainingProgressResponse
                     });
                     break;
                 }
@@ -59,7 +59,7 @@ namespace CatsClassification
         {
             var dataSource = CreateDataSource(datasetFile);
             
-            var testingResult = new TestingResult();
+            var testingResultResponse = new TestingResultResponse();
 
             const int minibatchSize = 1;
             var currentMinibatch = 0;
@@ -81,13 +81,13 @@ namespace CatsClassification
                 var actualLabels = maxSelector(actual);
                 var expectedLabels = maxSelector(expected);
 
-                testingResult.Correct += actualLabels.Zip(expectedLabels, (a, b) => a.Equals(b) ? 1 : 0).Sum();
-                testingResult.Total += actualLabels.Count();
+                testingResultResponse.Correct += actualLabels.Zip(expectedLabels, (a, b) => a.Equals(b) ? 1 : 0).Sum();
+                testingResultResponse.Total += actualLabels.Count();
 
                 currentMinibatch++;
                 if (minibatchData.Values.Any(x => x.sweepEnd))
                 {
-                    OnTestingFinished(testingResult);
+                    OnTestingFinished(testingResultResponse);
                     break;
                 }
             }
