@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractRunner.cs" />
     <Compile Include="CatsClassificationRunner.cs" />
     <Compile Include="CntkDataSource.cs" />
     <Compile Include="CntkModelWrapper.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="DataInfrastructure\Dataset.cs" />
     <Compile Include="DataInfrastructure\ImageFolderDatasetCreator.cs" />
     <Compile Include="Common\ImageHelper.cs" />
+    <Compile Include="IRunner.cs" />
     <Compile Include="IRunnerResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CntkHelper.cs" />

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CatsClassification
 {
-    public class CatsClassificationRunner
+    public class CatsClassificationRunner : AbstractRunner
     {
         private const string FEATURE_STREAM_NAME = "features";
         private const string LABEL_STREAM_NAME = "labels";
@@ -18,7 +18,7 @@ namespace CatsClassification
             _modelWrapper = new CntkModelWrapper(modelFile, _device);
         }
 
-        public void Train(string datasetFile)
+        public override void Train(string datasetFile)
         {
             var dataSource = CreateDataSource(datasetFile);
             var trainer = CreateTrainer();
@@ -56,7 +56,7 @@ namespace CatsClassification
                 }
             }
         }
-        public void Test(string datasetFile)
+        public override void Test(string datasetFile)
         {
             var dataSource = CreateDataSource(datasetFile);
             
@@ -136,16 +136,5 @@ namespace CatsClassification
                     MinibatchSource.InfinitelyRepeat),
                 FEATURE_STREAM_NAME,
                 LABEL_STREAM_NAME);
-
-        public event EventHandler<TrainingProgress> TrainingIterationPerformed;
-        public event EventHandler<TrainingResult> TrainingFinished;
-        public event EventHandler<TestingResult> TestingFinished;
-
-        protected void OnTrainingIterationPerformed(TrainingProgress trainingProgress)
-            => TrainingIterationPerformed?.Invoke(this, trainingProgress);
-        protected void OnTrainingFinished(TrainingResult trainingResult)
-            => TrainingFinished?.Invoke(this, trainingResult);
-        protected void OnTestingFinished(TestingResult testingResult)
-            => TestingFinished?.Invoke(this, testingResult);
     }
 }
