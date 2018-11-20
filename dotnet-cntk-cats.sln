@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatsClassification", "CatsC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatsClassification.Training", "CatsClassification.Training\CatsClassification.Training.csproj", "{9A1C9037-9345-4E4C-9D4F-AC15E1AFE821}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatsClassification.Example", "CatsClassification.Example\CatsClassification.Example.csproj", "{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{9A1C9037-9345-4E4C-9D4F-AC15E1AFE821}.Release|x64.Build.0 = Release|x64
 		{9A1C9037-9345-4E4C-9D4F-AC15E1AFE821}.Release|x86.ActiveCfg = Release|x86
 		{9A1C9037-9345-4E4C-9D4F-AC15E1AFE821}.Release|x86.Build.0 = Release|x86
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Debug|x64.Build.0 = Debug|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Debug|x86.Build.0 = Debug|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Release|x64.ActiveCfg = Release|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Release|x64.Build.0 = Release|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Release|x86.ActiveCfg = Release|Any CPU
+		{87AEDFFC-33EC-4E00-9E4A-133A6A09C408}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
