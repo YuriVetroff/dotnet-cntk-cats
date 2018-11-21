@@ -32,7 +32,6 @@
             this.buttonOpen = new System.Windows.Forms.Button();
             this.buttonClassify = new System.Windows.Forms.Button();
             this.groupBoxResult = new System.Windows.Forms.GroupBox();
-            this.labelClassCaption = new System.Windows.Forms.Label();
             this.labelClass = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxMain)).BeginInit();
             this.groupBoxResult.SuspendLayout();
@@ -73,31 +72,21 @@
             // groupBoxResult
             // 
             this.groupBoxResult.Controls.Add(this.labelClass);
-            this.groupBoxResult.Controls.Add(this.labelClassCaption);
             this.groupBoxResult.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.groupBoxResult.Location = new System.Drawing.Point(276, 94);
             this.groupBoxResult.Name = "groupBoxResult";
-            this.groupBoxResult.Size = new System.Drawing.Size(149, 51);
+            this.groupBoxResult.Size = new System.Drawing.Size(149, 57);
             this.groupBoxResult.TabIndex = 4;
             this.groupBoxResult.TabStop = false;
             this.groupBoxResult.Text = "Result";
             // 
-            // labelClassCaption
-            // 
-            this.labelClassCaption.AutoSize = true;
-            this.labelClassCaption.Location = new System.Drawing.Point(6, 22);
-            this.labelClassCaption.Name = "labelClassCaption";
-            this.labelClassCaption.Size = new System.Drawing.Size(52, 20);
-            this.labelClassCaption.TabIndex = 0;
-            this.labelClassCaption.Text = "Class:";
-            // 
             // labelClass
             // 
             this.labelClass.AutoSize = true;
-            this.labelClass.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelClass.Location = new System.Drawing.Point(59, 22);
+            this.labelClass.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelClass.Location = new System.Drawing.Point(6, 22);
             this.labelClass.Name = "labelClass";
-            this.labelClass.Size = new System.Drawing.Size(49, 20);
+            this.labelClass.Size = new System.Drawing.Size(71, 29);
             this.labelClass.TabIndex = 2;
             this.labelClass.Text = "none";
             // 
@@ -128,7 +117,6 @@
         private System.Windows.Forms.Button buttonOpen;
         private System.Windows.Forms.Button buttonClassify;
         private System.Windows.Forms.GroupBox groupBoxResult;
-        private System.Windows.Forms.Label labelClassCaption;
         private System.Windows.Forms.Label labelClass;
     }
 }
