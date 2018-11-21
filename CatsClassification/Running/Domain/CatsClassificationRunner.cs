@@ -23,8 +23,8 @@ namespace CatsClassification.Running.Domain
             var dataSource = CreateDataSource(datasetFile);
             var trainer = CreateTrainer();
 
-            const int minibatchSize = 15;
-            const int maxMinibatches = 5;
+            const int minibatchSize = 4;
+            const int maxMinibatches = 50;
             var minibatchesSeen = 0;
             while (true)
             {
@@ -96,7 +96,7 @@ namespace CatsClassification.Running.Domain
 
         private Trainer CreateTrainer()
         {
-            const float learningRate = 0.2F;
+            const float learningRate = 0.02F;
             const float momentum = 0.9F;
             const float l2regularization = 0.1F;
 

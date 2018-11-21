@@ -15,7 +15,7 @@ namespace CatsClassification.Training
         private const int IMAGE_WIDTH = 224;
         private const int IMAGE_HEIGHT = 224;
         private const int IMAGE_DEPTH = 3;
-        private const int CLASS_COUNT = 3;
+        private const int CLASS_COUNT = 4;
 
         public static void CreateAndSaveModel(string baseModelFile, string newModelFile)
         {
@@ -45,7 +45,8 @@ namespace CatsClassification.Training
                 {
                     {  "tiger", 0 },
                     {  "leopard", 1 },
-                    {  "puma", 2 }
+                    {  "puma", 2 },
+                    {  "lynx", 3 }
                 }, CLASS_COUNT, IMAGE_WIDTH, IMAGE_HEIGHT);
 
             var dataFileCreator = new DataFileCreator();
@@ -74,7 +75,7 @@ namespace CatsClassification.Training
         private const string NEW_MODEL_FILE = "cats-classifier.model";
         private const string TRAINED_MODEL_FILE = "cats-classifier-trained.model";
 
-        private const bool REQUIRE_INIT = false;
+        private const bool REQUIRE_INIT = true;
 
         #endregion
 

@@ -19,7 +19,8 @@ namespace CatsClassification.Example
         {
             { 0, "Tiger" },
             { 1, "Leopard" },
-            { 2, "Puma" }
+            { 2, "Puma" },
+            { 3, "Lynx" }
         };
 
         public Form1()
