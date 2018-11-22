@@ -94,7 +94,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="cats-classification\ResNet18_ImageNet_CNTK.model">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

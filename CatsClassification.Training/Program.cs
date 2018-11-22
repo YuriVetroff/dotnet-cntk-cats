@@ -1,9 +1,9 @@
-﻿using CatsClassification.DataInfrastructure;
+﻿using CatsClassification.Configuration;
+using CatsClassification.DataInfrastructure;
 using CatsClassification.Running;
 using CatsClassification.Running.Responses;
 using CNTK;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 using static System.Console;
@@ -15,14 +15,26 @@ namespace CatsClassification.Training
         private const int IMAGE_WIDTH = 224;
         private const int IMAGE_HEIGHT = 224;
         private const int IMAGE_DEPTH = 3;
-        private const int CLASS_COUNT = 4;
 
-        public static void CreateAndSaveModel(string baseModelFile, string newModelFile)
+        public static void Init(
+            ClassificationConfig config,
+            string configFile,
+            string baseModelFile, string newModelFile,
+            string trainImageFolder, string trainDatasetFile,
+            string testImageFolder, string testDatasetFile)
+        {
+            CreateAndSaveModel(config, baseModelFile, newModelFile);
+            CreateAndSaveDatasets(config, trainImageFolder, trainDatasetFile, testImageFolder, testDatasetFile);
+            config.Save(configFile);
+        }
+
+        public static void CreateAndSaveModel(
+            ClassificationConfig config, string baseModelFile, string newModelFile)
         {
             const string featureNodeName = "features";
             const string lastHiddenNodeName = "z.x";
             const string predictionNodeName = "prediction";
-            int[] inputShape = new int[] { IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_DEPTH };
+            var inputShape = new int[] { IMAGE_WIDTH, IMAGE_HEIGHT, IMAGE_DEPTH };
 
             var device = DeviceDescriptor.CPUDevice;
             var model = CntkHelper.BuildTransferLearningModel(
@@ -31,23 +43,18 @@ namespace CatsClassification.Training
                     predictionNodeName,
                     lastHiddenNodeName,
                     inputShape,
-                    CLASS_COUNT,
+                    config.ClassCount,
                     device);
 
             model.Save(newModelFile);
         }
         public static void CreateAndSaveDatasets(
+            ClassificationConfig config,
             string trainImageFolder, string trainDatasetFile,
             string testImageFolder, string testDatasetFile)
         {
             var datasetCreator = new ImageFolderDatasetCreator(
-                new Dictionary<string, int>
-                {
-                    {  "tiger", 0 },
-                    {  "leopard", 1 },
-                    {  "puma", 2 },
-                    {  "lynx", 3 }
-                }, CLASS_COUNT, IMAGE_WIDTH, IMAGE_HEIGHT);
+               config, IMAGE_WIDTH, IMAGE_HEIGHT);
 
             var dataFileCreator = new DataFileCreator();
 
@@ -75,6 +82,7 @@ namespace CatsClassification.Training
         private const string NEW_MODEL_FILE = "cats-classifier.model";
         private const string TRAINED_MODEL_FILE = "cats-classifier-trained.model";
 
+        private const string CONFIG_FILE = "config.txt";
         private const bool REQUIRE_INIT = true;
 
         #endregion
@@ -120,11 +128,21 @@ namespace CatsClassification.Training
         }
         private static void Init()
         {
-            CatsClassificationInitializer.CreateAndSaveModel(
-                FinalizePath(BASE_MODEL_FILE),
-                FinalizePath(NEW_MODEL_FILE));
+            var config = new ClassificationConfig(
+                new string[]
+                {
+                    "Tiger",
+                    "Leopard",
+                    "Puma",
+                    "Lynx",
+                    "Lion"
+                });
 
-            CatsClassificationInitializer.CreateAndSaveDatasets(
+            CatsClassificationInitializer.Init(
+                config,
+                FinalizePath(CONFIG_FILE),
+                FinalizePath(BASE_MODEL_FILE),
+                FinalizePath(NEW_MODEL_FILE),
                 FinalizePath(TRAIN_IMAGE_FOLDER),
                 FinalizePath(TRAIN_DATASET_FILE),
                 FinalizePath(TEST_IMAGE_FOLDER),

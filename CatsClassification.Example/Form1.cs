@@ -1,4 +1,5 @@
 ﻿using CatsClassification.Common;
+using CatsClassification.Configuration;
 using CatsClassification.Running;
 using CNTK;
 using System;
@@ -12,21 +13,17 @@ namespace CatsClassification.Example
     public partial class Form1 : Form
     {
         private const string TRAINED_MODEL_FILE = "cats-classification/cats-classifier-trained.model";
+        private const string CONFIG_FILE = "cats-classification/config.txt";
         private readonly CntkModelWrapper _modelWrapper;
         private readonly DeviceDescriptor _device = DeviceDescriptor.CPUDevice;
         private string _imageFile = "";
-        private readonly IReadOnlyDictionary<int, string> _outputToClassMap = new Dictionary<int, string>()
-        {
-            { 0, "Tiger" },
-            { 1, "Leopard" },
-            { 2, "Puma" },
-            { 3, "Lynx" }
-        };
+        private readonly ClassificationConfig _config;
 
         public Form1()
         {
             InitializeComponent();
             _modelWrapper = new CntkModelWrapper(TRAINED_MODEL_FILE, _device);
+            _config = ClassificationConfig.Load(CONFIG_FILE);
         }
 
         private void buttonOpen_Click(object sender, EventArgs e)
@@ -55,7 +52,7 @@ namespace CatsClassification.Example
 
             var output = outputData.Select(x => (double)x).ToArray();
             var classIndex = Array.IndexOf(output, output.Max());
-            var className = _outputToClassMap[classIndex];
+            var className = _config.GetClassNameByIndex(classIndex);
 
             labelClass.Text = className;
         }

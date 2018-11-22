@@ -83,6 +83,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\ClassificationConfig.cs" />
     <Compile Include="Running\AbstractRunner.cs" />
     <Compile Include="Running\Domain\CatsClassificationRunner.cs" />
     <Compile Include="CntkDataSource.cs" />

@@ -24,7 +24,7 @@ namespace CatsClassification.Running.Domain
             var trainer = CreateTrainer();
 
             const int minibatchSize = 4;
-            const int maxMinibatches = 50;
+            const int maxMinibatches = 100;
             var minibatchesSeen = 0;
             while (true)
             {
